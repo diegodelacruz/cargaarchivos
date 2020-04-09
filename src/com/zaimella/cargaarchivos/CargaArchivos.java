@@ -34,9 +34,9 @@ public class CargaArchivos {
         Archivo.listarArchivos(directorio, listaArchivos);
                 
         for (int i = 0; i < listaArchivos.size(); i++) {
-            File file = listaArchivos.get(i);
-            Archivo.leerArchivo(file);            
-            file = null;
+            File archivo = listaArchivos.get(i);
+            Archivo.leerArchivo(archivo);            
+            archivo = null;
         }
     }
 

@@ -57,14 +57,14 @@ public class Archivo {
 
     public static void leerArchivo(File archivo) throws IOException, FileNotFoundException, InvalidFormatException {
         String extension = FilenameUtils.getExtension(archivo.getName()).toLowerCase();
-        String pad = "..................................................";
+        String pad = "..........................................................................................";
         String nme = "Archivo " + archivo.getName();
 
         if (extension.equals("txt") || extension.equals("csv")) {
             System.out.print(nme + pad.substring(nme.length()));
             archivoPlano(archivo);
         } else if (extension.equals("xlsx") || extension.equals("xls")) {
-            System.out.println(nme + pad.substring(nme.length()));
+            System.out.print(nme + pad.substring(nme.length()));
             archivoOffice(archivo);
         }
     }
@@ -72,6 +72,7 @@ public class Archivo {
     public static void archivoPlano(File archivo) {
         BufferedReader br = null;
         String vacio = "";
+        String separador = "<-?->";
         String reg;
         String pad;
         int lim = 5000;
@@ -102,9 +103,9 @@ public class Archivo {
                 String linea;
                 while ((linea = br.readLine()) != null) {
                     i++;
-                    linea = linea.replace("\"", "").replaceAll(",", "").replaceAll("\\'", "").replaceAll("\\t", "@@");
+                    linea = linea.replace("\"", "").replaceAll(",", "").replaceAll("\\'", "").replaceAll("\\t", separador);
 
-                    zaimellaDB.insertaTablaCargaArchivos(conexion, archivo.getParent(), archivo.getName(), FilenameUtils.getExtension(archivo.getName()).toLowerCase(), vacio, Integer.valueOf(i), linea);
+                    zaimellaDB.insertaTablaCargaArchivos(conexion, archivo.getParent(), archivo.getName(), FilenameUtils.getExtension(archivo.getName()).toLowerCase(), vacio, Integer.valueOf(i), null, linea);
 
                     if (i % lim == 0) {
                         conexion.commit();
@@ -136,11 +137,13 @@ public class Archivo {
         String reg;
         String pad;
         String nhj;
+        String separador = "<-?->";
         DataFormatter formatoFecha = new DataFormatter();
         List<String> lineasArchivo = new ArrayList();
         int lim = 5000;
         int primeraFila;
         int ultimaFila;
+        int ultimaColumna;
         int k;
 
         Connection conexion = null;
@@ -164,7 +167,7 @@ public class Archivo {
                     nombreHoja = libro.getSheetName(i).trim();
                     HSSFSheet hoja = libro.getSheetAt(i);
 
-                    pad = "..................................................";
+                    pad = "...............................";
                     nhj = "  Hoja " + nombreHoja;
                     System.out.print(nhj + pad.substring(nhj.length()));
 
@@ -175,11 +178,12 @@ public class Archivo {
                     for (int fila = primeraFila; fila <= ultimaFila; fila++) {
                         k++;
                         Row row = hoja.getRow(fila);
-                        int ultimaColumna = Math.max(0, 30);
+//                        int ultimaColumna = Math.max(0, 30);
+                        ultimaColumna = row.getLastCellNum();
                         StringBuilder sb = new StringBuilder();
 
                         if (row != null) {
-                            for (int columna = 0; columna <= ultimaColumna; columna++) {
+                            for (int columna = 0; columna <= (ultimaColumna - 1); columna++) {
                                 Cell cell = row.getCell(columna, Row.RETURN_BLANK_AS_NULL);
                                 CellType type;
                                 try {
@@ -217,9 +221,9 @@ public class Archivo {
 
                             String linea = new String();
                             linea = sb.toString();
-                            linea = linea.replace("\"", "").replaceAll(",", ".").replaceAll("\\'", "").replaceAll("\\t", "@@");
+                            linea = linea.replace("\"", "").replaceAll(",", ".").replaceAll("\\'", "").replaceAll("\\t", separador);
 
-                            zaimellaDB.insertaTablaCargaArchivos(conexion, archivo.getParent(), archivo.getName(), extension, nombreHoja, Integer.valueOf(k), linea);
+                            zaimellaDB.insertaTablaCargaArchivos(conexion, archivo.getParent(), archivo.getName(), extension, nombreHoja, Integer.valueOf(k), Integer.valueOf(ultimaColumna), linea);
 
                             if (k % lim == 0) {
                                 conexion.commit();
@@ -237,7 +241,7 @@ public class Archivo {
                     nombreHoja = libro.getSheetName(i).trim();
                     XSSFSheet hoja = libro.getSheetAt(i);
 
-                    pad = "..................................................";
+                    pad = "...............................";
                     nhj = "  Hoja " + nombreHoja;
                     System.out.print(nhj + pad.substring(nhj.length()));
 
@@ -248,11 +252,12 @@ public class Archivo {
                     for (int fila = primeraFila; fila <= ultimaFila; fila++) {
                         k++;
                         Row row = hoja.getRow(fila);
-                        int ultimaColumna = Math.max(0, 30);
+//                        int ultimaColumna = Math.max(0, 30);
+                        ultimaColumna = row.getLastCellNum();
                         StringBuilder sb = new StringBuilder();
 
                         if (row != null) {
-                            for (int columna = 0; columna <= ultimaColumna; columna++) {
+                            for (int columna = 0; columna <= (ultimaColumna - 1); columna++) {
                                 Cell cell = row.getCell(columna, Row.RETURN_BLANK_AS_NULL);
                                 CellType type;
                                 try {
@@ -290,9 +295,9 @@ public class Archivo {
 
                             String linea = new String();
                             linea = sb.toString();
-                            linea = linea.replace("\"", "").replaceAll(",", ".").replaceAll("\\'", "").replaceAll("\\t", "@@");
+                            linea = linea.replace("\"", "").replaceAll(",", ".").replaceAll("\\'", "").replaceAll("\\t", separador);
 
-                            zaimellaDB.insertaTablaCargaArchivos(conexion, archivo.getParent(), archivo.getName(), extension, nombreHoja, Integer.valueOf(k), linea);
+                            zaimellaDB.insertaTablaCargaArchivos(conexion, archivo.getParent(), archivo.getName(), extension, nombreHoja, Integer.valueOf(k), Integer.valueOf(ultimaColumna), linea);
 
                             if (k % lim == 0) {
                                 conexion.commit();
