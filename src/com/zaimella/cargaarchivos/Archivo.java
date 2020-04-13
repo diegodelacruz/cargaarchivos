@@ -1,4 +1,4 @@
-	/*
+/*
  * To change this license header, choose License Headers in Project Properties.
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
@@ -167,7 +167,7 @@ public class Archivo {
                     nombreHoja = libro.getSheetName(i).trim();
                     HSSFSheet hoja = libro.getSheetAt(i);
 
-                    pad = "...............................";
+                    pad = ".....................................";
                     nhj = " Hoja " + nombreHoja;
                     System.out.print(nhj + pad.substring(nhj.length()));
 
@@ -185,6 +185,7 @@ public class Archivo {
                             for (int columna = 0; columna <= (ultimaColumna - 1); columna++) {
                                 Cell cell = row.getCell(columna, Row.RETURN_BLANK_AS_NULL);
                                 CellType type;
+
                                 try {
                                     type = cell.getCellTypeEnum();
                                 } catch (NullPointerException npe) {
@@ -220,7 +221,7 @@ public class Archivo {
 
                             String linea = new String();
                             linea = sb.toString();
-                            linea = linea.replace("\"", "").replaceAll(",", ".").replaceAll("\\'", "").replaceAll("\\t", separador);
+                            linea = linea.replace("\n", " ").replace("\"", "").replaceAll(",", ".").replaceAll("\\'", "").replaceAll("\\t", separador);
 
                             zaimellaDB.insertaTablaCargaArchivos(conexion, archivo.getParent(), archivo.getName(), extension, nombreHoja, Integer.valueOf(k), Integer.valueOf(ultimaColumna), linea);
 
@@ -240,8 +241,8 @@ public class Archivo {
                     nombreHoja = libro.getSheetName(i).trim();
                     XSSFSheet hoja = libro.getSheetAt(i);
 
-                    pad = "...............................";
-                    nhj = "  Hoja " + nombreHoja;
+                    pad = ".....................................";
+                    nhj = " Hoja " + nombreHoja;
                     System.out.print(nhj + pad.substring(nhj.length()));
 
                     primeraFila = Math.min(0, hoja.getFirstRowNum());
@@ -251,7 +252,6 @@ public class Archivo {
                     for (int fila = primeraFila; fila <= ultimaFila; fila++) {
                         k++;
                         Row row = hoja.getRow(fila);
-//                        int ultimaColumna = Math.max(0, 30);
                         ultimaColumna = row.getLastCellNum();
                         StringBuilder sb = new StringBuilder();
 
