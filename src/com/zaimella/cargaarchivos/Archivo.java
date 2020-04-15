@@ -137,7 +137,8 @@ public class Archivo {
         String reg;
         String pad;
         String nhj;
-        String separador = "<-?->";
+        String separadorColumnas = "<-?->";
+        String celdaVacia = "[orcl]";
         DataFormatter formatoFecha = new DataFormatter();
         List<String> lineasArchivo = new ArrayList();
         int lim = 5000;
@@ -176,57 +177,59 @@ public class Archivo {
 
                     k = 0;
                     for (int fila = primeraFila; fila <= ultimaFila; fila++) {
-                        k++;
-                        Row row = hoja.getRow(fila);
-                        ultimaColumna = row.getLastCellNum();
-                        StringBuilder sb = new StringBuilder();
+                        if (hoja.getRow(fila) != null) {
+                            k++;
+                            Row row = hoja.getRow(fila);
+                            ultimaColumna = row.getLastCellNum();
+                            StringBuilder sb = new StringBuilder();
 
-                        if (row != null) {
-                            for (int columna = 0; columna <= (ultimaColumna - 1); columna++) {
-                                Cell cell = row.getCell(columna, Row.RETURN_BLANK_AS_NULL);
-                                CellType type;
+                            if (row != null) {
+                                for (int columna = 0; columna <= (ultimaColumna - 1); columna++) {
+                                    Cell cell = row.getCell(columna, Row.RETURN_BLANK_AS_NULL);
+                                    CellType type;
 
-                                try {
-                                    type = cell.getCellTypeEnum();
-                                } catch (NullPointerException npe) {
-                                    type = CellType.BLANK;
-                                }
+                                    try {
+                                        type = cell.getCellTypeEnum();
+                                    } catch (NullPointerException npe) {
+                                        type = CellType.BLANK;
+                                    }
 
-                                String texto = formatoFecha.formatCellValue(cell);
+                                    String texto = formatoFecha.formatCellValue(cell);
 
-                                if (type == CellType.STRING) {
-                                    sb.append(cell.getRichStringCellValue().toString()).append("\t");
-                                } else if (type == CellType.NUMERIC) {
-                                    cell.setCellType(CellType.STRING);
-                                    sb.append(cell.getRichStringCellValue().toString()).append("\t");
-                                } else if (type == CellType.BOOLEAN) {
-                                    cell.setCellType(CellType.STRING);
-                                    sb.append(cell.getRichStringCellValue().toString()).append("\t");
-                                } else if (type == CellType.FORMULA) {
-                                    if (cell.getCachedFormulaResultTypeEnum() == CellType.NUMERIC) {
+                                    if (type == CellType.STRING) {
+                                        sb.append(cell.getRichStringCellValue().toString()).append("\t");
+                                    } else if (type == CellType.NUMERIC) {
                                         cell.setCellType(CellType.STRING);
                                         sb.append(cell.getRichStringCellValue().toString()).append("\t");
-                                    } else if (cell.getCachedFormulaResultTypeEnum() == CellType.STRING) {
+                                    } else if (type == CellType.BOOLEAN) {
+                                        cell.setCellType(CellType.STRING);
                                         sb.append(cell.getRichStringCellValue().toString()).append("\t");
-                                    } else if (cell.getCachedFormulaResultTypeEnum() == CellType.ERROR) {
-                                        sb.append("[orcl]").append("\t");
+                                    } else if (type == CellType.FORMULA) {
+                                        if (cell.getCachedFormulaResultTypeEnum() == CellType.NUMERIC) {
+                                            cell.setCellType(CellType.STRING);
+                                            sb.append(cell.getRichStringCellValue().toString()).append("\t");
+                                        } else if (cell.getCachedFormulaResultTypeEnum() == CellType.STRING) {
+                                            sb.append(cell.getRichStringCellValue().toString()).append("\t");
+                                        } else if (cell.getCachedFormulaResultTypeEnum() == CellType.ERROR) {
+                                            sb.append(celdaVacia).append("\t");
+                                        }
+                                    } else if (type == CellType.BLANK) {
+                                        sb.append(celdaVacia).append("\t");
+                                    } else if (type == CellType.ERROR) {
+                                        sb.append(celdaVacia).append("\t");
+                                    } else if (cell == null) {
                                     }
-                                } else if (type == CellType.BLANK) {
-                                    sb.append("[orcl]").append("\t");
-                                } else if (type == CellType.ERROR) {
-                                    sb.append("[orcl]").append("\t");
-                                } else if (cell == null) {
                                 }
-                            }
 
-                            String linea = new String();
-                            linea = sb.toString();
-                            linea = linea.replace("\n", " ").replace("\"", "").replaceAll(",", ".").replaceAll("\\'", "").replaceAll("\\t", separador);
+                                String linea = new String();
+                                linea = sb.toString();
+                                linea = linea.replace("\n", " ").replace("\"", "").replaceAll(",", ".").replaceAll("\\'", "").replaceAll("\\t", separadorColumnas);
 
-                            zaimellaDB.insertaTablaCargaArchivos(conexion, archivo.getParent(), archivo.getName(), extension, nombreHoja, Integer.valueOf(k), Integer.valueOf(ultimaColumna), linea);
+                                zaimellaDB.insertaTablaCargaArchivos(conexion, archivo.getParent(), archivo.getName(), extension, nombreHoja, Integer.valueOf(k), Integer.valueOf(ultimaColumna), linea);
 
-                            if (k % lim == 0) {
-                                conexion.commit();
+                                if (k % lim == 0) {
+                                    conexion.commit();
+                                }
                             }
                         }
                     }
@@ -250,58 +253,59 @@ public class Archivo {
 
                     k = 0;
                     for (int fila = primeraFila; fila <= ultimaFila; fila++) {
-                        k++;
-                        Row row = hoja.getRow(fila);
-                        ultimaColumna = row.getLastCellNum();
-                        StringBuilder sb = new StringBuilder();
+                        if (hoja.getRow(fila) != null) {
+                            k++;
+                            Row row = hoja.getRow(fila);
+                            ultimaColumna = row.getLastCellNum();
+                            StringBuilder sb = new StringBuilder();
 
-                        if (row != null) {
-                            for (int columna = 0; columna <= ultimaColumna; columna++) {
-                                Cell cell = row.getCell(columna, Row.RETURN_BLANK_AS_NULL);
-                                CellType type;
+                            if (row != null) {
+                                for (int columna = 0; columna <= ultimaColumna; columna++) {
+                                    Cell cell = row.getCell(columna, Row.RETURN_BLANK_AS_NULL);
+                                    CellType type;
 
-                                try {
-                                    type = cell.getCellTypeEnum();
-                                } catch (NullPointerException e) {
-                                    type = CellType.BLANK;
-                                }
-
-                                String text = formatoFecha.formatCellValue(cell);
-
-                                if (type == CellType.STRING) {
-                                    sb.append(cell.getRichStringCellValue().toString()).append("\t");
-                                } else if (type == CellType.NUMERIC) {
-                                    cell.setCellType(CellType.STRING);
-                                    sb.append(cell.getRichStringCellValue()).append("\t");
-                                } else if (type == CellType.BOOLEAN) {
-                                    cell.setCellType(CellType.STRING);
-                                    sb.append(cell.getRichStringCellValue()).append("\t");
-                                } else if (type == CellType.FORMULA) {
-                                    if (cell.getCachedFormulaResultTypeEnum() == CellType.NUMERIC) {
-                                        cell.setCellType(CellType.STRING);
-                                        sb.append(cell.getRichStringCellValue().toString()).append("\t");
-                                    } else if (cell.getCachedFormulaResultTypeEnum() == CellType.STRING) {
-                                        sb.append(cell.getRichStringCellValue().toString()).append("\t");
-                                    } else if (cell.getCachedFormulaResultTypeEnum() == CellType.ERROR) {
-                                        sb.append("[orcl]").append("\t");
+                                    try {
+                                        type = cell.getCellTypeEnum();
+                                    } catch (NullPointerException e) {
+                                        type = CellType.BLANK;
                                     }
-                                } else if (type == CellType.BLANK) {
-                                    sb.append("[orcl]").append("\t");
-                                } else if (type == CellType.ERROR) {
-                                    sb.append("[orcl]").append("\t");
-                                } else if (cell == null) {
-                                    continue;
+
+                                    String text = formatoFecha.formatCellValue(cell);
+
+                                    if (type == CellType.STRING) {
+                                        sb.append(cell.getRichStringCellValue().toString()).append("\t");
+                                    } else if (type == CellType.NUMERIC) {
+                                        cell.setCellType(CellType.STRING);
+                                        sb.append(cell.getRichStringCellValue()).append("\t");
+                                    } else if (type == CellType.BOOLEAN) {
+                                        cell.setCellType(CellType.STRING);
+                                        sb.append(cell.getRichStringCellValue()).append("\t");
+                                    } else if (type == CellType.FORMULA) {
+                                        if (cell.getCachedFormulaResultTypeEnum() == CellType.NUMERIC) {
+                                            cell.setCellType(CellType.STRING);
+                                            sb.append(cell.getRichStringCellValue().toString()).append("\t");
+                                        } else if (cell.getCachedFormulaResultTypeEnum() == CellType.STRING) {
+                                            sb.append(cell.getRichStringCellValue().toString()).append("\t");
+                                        } else if (cell.getCachedFormulaResultTypeEnum() == CellType.ERROR) {
+                                            sb.append(celdaVacia).append("\t");
+                                        }
+                                    } else if (type == CellType.BLANK) {
+                                        sb.append(celdaVacia).append("\t");
+                                    } else if (type == CellType.ERROR) {
+                                        sb.append(celdaVacia).append("\t");
+                                    } else if (cell == null) {
+                                        continue;
+                                    }
                                 }
-                            }
 
-                            String linea = new String();
-                            linea = sb.toString();
-                            linea = linea.replace("\n", " ").replace("\"", "").replaceAll(",", ".").replaceAll("\\'", "").replaceAll("\\t", separador);
+                                String linea = new String();
+                                linea = sb.toString();
+                                linea = linea.replace("\n", " ").replace("\"", "").replaceAll(",", ".").replaceAll("\\'", "").replaceAll("\\t", separadorColumnas);
 
-                            zaimellaDB.insertaTablaCargaArchivos(conexion, archivo.getParent(), archivo.getName(), extension, nombreHoja, Integer.valueOf(k), Integer.valueOf(ultimaColumna), linea);
-
-                            if (k % lim == 0) {
-                                conexion.commit();
+                                zaimellaDB.insertaTablaCargaArchivos(conexion, archivo.getParent(), archivo.getName(), extension, nombreHoja, Integer.valueOf(k), Integer.valueOf(ultimaColumna), linea);
+                                if (k % lim == 0) {
+                                    conexion.commit();
+                                }
                             }
                         }
                     }
