@@ -36,10 +36,10 @@ public class ZaimellaDB {
         return conn;
     }
 
-    public void insertaTablaCargaArchivos(Connection conexion, String ruta, String archivo, String extension, String hoja, Integer linea, Integer separadores, String contenido) {
+    public void insertaTablaCargaArchivos(Connection conexion, String ruta, String archivo, String extension, String hoja, Integer linea, Integer separadores, String texto, String contenido) {
         StringBuilder consulta = new StringBuilder();
-        consulta.append(" insert into t_apex_cargaarchivos (entry,ruta,archivo,extension,hoja,linea,separadores,contenido)")
-                .append(" values (seq_apex_cargaarchivos.nextval,?,?,?,?,?,?,?)");
+        consulta.append("insert into t_apex_cargaarchivos (entry,ruta,archivo,extension,hoja,linea,separadores,texto,contenido) ")
+                .append("values (seq_apex_cargaarchivos.nextval,?,?,?,?,?,?,?,?)");
 
         PreparedStatement preparedStatement = null;
         try {
@@ -50,7 +50,8 @@ public class ZaimellaDB {
             preparedStatement.setString(4, hoja.toLowerCase());
             preparedStatement.setInt(5, linea.intValue());
             preparedStatement.setInt(6, separadores.intValue());
-            preparedStatement.setString(7, contenido);
+            preparedStatement.setString(7, texto);
+            preparedStatement.setString(8, contenido);
 
             int resultado = preparedStatement.executeUpdate();
             if (resultado <= 0) {

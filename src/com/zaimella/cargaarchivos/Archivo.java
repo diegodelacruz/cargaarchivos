@@ -105,7 +105,7 @@ public class Archivo {
                     i++;
                     linea = linea.replace("\"", "").replaceAll(",", "").replaceAll("\\'", "").replaceAll("\\t", separador);
 
-                    zaimellaDB.insertaTablaCargaArchivos(conexion, archivo.getParent(), archivo.getName(), FilenameUtils.getExtension(archivo.getName()).toLowerCase(), vacio, Integer.valueOf(i), null, linea);
+                    zaimellaDB.insertaTablaCargaArchivos(conexion, archivo.getParent(), archivo.getName(), FilenameUtils.getExtension(archivo.getName()).toLowerCase(), vacio, Integer.valueOf(i), 0, linea, vacio);
 
                     if (i % lim == 0) {
                         conexion.commit();
@@ -137,6 +137,7 @@ public class Archivo {
         String reg;
         String pad;
         String nhj;
+        String vacio = "";
         String separadorColumnas = "<-?->";
         String celdaVacia = "[orcl]";
         DataFormatter formatoFecha = new DataFormatter();
@@ -225,7 +226,7 @@ public class Archivo {
                                 linea = sb.toString();
                                 linea = linea.replace("\n", " ").replace("\"", "").replaceAll(",", ".").replaceAll("\\'", "").replaceAll("\\t", separadorColumnas);
 
-                                zaimellaDB.insertaTablaCargaArchivos(conexion, archivo.getParent(), archivo.getName(), extension, nombreHoja, Integer.valueOf(k), Integer.valueOf(ultimaColumna), linea);
+                                zaimellaDB.insertaTablaCargaArchivos(conexion, archivo.getParent(), archivo.getName(), extension, nombreHoja, Integer.valueOf(k), Integer.valueOf(ultimaColumna), vacio, linea);
 
                                 if (k % lim == 0) {
                                     conexion.commit();
@@ -302,7 +303,7 @@ public class Archivo {
                                 linea = sb.toString();
                                 linea = linea.replace("\n", " ").replace("\"", "").replaceAll(",", ".").replaceAll("\\'", "").replaceAll("\\t", separadorColumnas);
 
-                                zaimellaDB.insertaTablaCargaArchivos(conexion, archivo.getParent(), archivo.getName(), extension, nombreHoja, Integer.valueOf(k), Integer.valueOf(ultimaColumna), linea);
+                                zaimellaDB.insertaTablaCargaArchivos(conexion, archivo.getParent(), archivo.getName(), extension, nombreHoja, Integer.valueOf(k), Integer.valueOf(ultimaColumna), vacio, linea);
                                 if (k % lim == 0) {
                                     conexion.commit();
                                 }
